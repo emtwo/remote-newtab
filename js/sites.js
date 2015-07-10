@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 /**
  * This class represents a site that is contained in a cell and can be pinned,
@@ -170,8 +168,9 @@ Site.prototype = {
     // first check for end time, as it may modify the link
     this._checkLinkEndTime();
     // setup display variables
-    let enhanced = Services.prefs.getBoolPref("browser.newtabpage.enhanced")
-                    && DirectoryLinksProvider.getEnhancedLink(this.link);
+    //let enhanced = Services.prefs.getBoolPref("browser.newtabpage.enhanced")
+    //                && DirectoryLinksProvider.getEnhancedLink(this.link);
+    let enhanced = false;
     let url = this.url;
     let title = enhanced && enhanced.title ? enhanced.title :
                 this.link.type == "history" ? this.link.baseDomain :
@@ -226,7 +225,7 @@ Site.prototype = {
    */
   captureIfMissing: function Site_captureIfMissing() {
     if (!document.hidden && !this.link.imageURI) {
-      sendAsyncMessage("NewTab:BackgroundPageThumbs", {url: this.url});
+      sendToBrowser("NewTab:BackgroundPageThumbs", {url: this.url});
     }
   },
 
@@ -234,19 +233,19 @@ Site.prototype = {
    * Refreshes the thumbnail for the site.
    */
   refreshThumbnail: function Site_refreshThumbnail() {
-    sendAsyncMessage("NewTab:PageThumbs", {url: this.url});
+    sendToBrowser("NewTab:PageThumbs", {url: this.url});
   },
 
   _getURI: function Site_getURI(message) {
     // Only enhance tiles if that feature is turned on
-    let link = message.data.enhanced && DirectoryLinksProvider.getEnhancedLink(this.link) || this.link;
+    let link = /*message.enhanced && DirectoryLinksProvider.getEnhancedLink(this.link) || */this.link;
 
     let thumbnail = this._querySelector(".newtab-thumbnail");
     if (link.bgColor) {
       thumbnail.style.backgroundColor = link.bgColor;
     }
 
-    let uri = this.link.imageURI || message.data.uri;
+    let uri = this.link.imageURI || message.uri;
     thumbnail.style.backgroundImage = 'url("' + uri + '")';
 
     if (link.enhancedImageURI) {
@@ -279,7 +278,7 @@ Site.prototype = {
     this._node.addEventListener("mouseover", this, false);
 
     // Add message listener
-    addMessageListener("NewTab:URI", this._getURI.bind(this));
+    registerListener("NewTab:URI", this._getURI.bind(this));
 
     // Specially treat the sponsored icon & suggested explanation
     // text to prevent regular hover effects
@@ -398,7 +397,7 @@ Site.prototype = {
     switch (aEvent.type) {
       case "mouseover":
         this._node.removeEventListener("mouseover", this, false);
-        this._speculativeConnect();
+        //this._speculativeConnect();
         break;
       case "dragstart":
         gDrag.start(this, aEvent);

@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 /**
  * Define various fixed dimensions
@@ -51,8 +49,8 @@ let gGrid = {
     this._createSiteFragment();
     addEventListener("resize", this);
 
-    sendAsyncMessage("NewTab:InitializeGrid");
-    addMessageListener("NewTab:FetchLinks", this.refresh.bind(this));
+    sendToBrowser("NewTab:InitializeGrid");
+    registerListener("NewTab:FetchLinks", this.refresh.bind(this));
 
     // Resize the grid as soon as the page loads.
     if (!this.isDocumentLoaded) {
@@ -102,15 +100,15 @@ let gGrid = {
    * Renders the grid, including cells and sites.
    */
   refresh: function(message) {
-    let links = message.data.links;
+    let links = message.links;
     let cell = document.createElementNS(HTML_NAMESPACE, "div");
     cell.classList.add("newtab-cell");
 
     // Creates all the cells up to the maximum
     let fragment = document.createDocumentFragment();
-    let rows = Math.max(1, Services.prefs.getIntPref("browser.newtabpage.rows"));
-    let columns = Math.max(1, Services.prefs.getIntPref("browser.newtabpage.columns"));
-    for (let i = 0; i < columns * rows; i++) {
+    //let rows = Math.max(1, Services.prefs.getIntPref("browser.newtabpage.rows"));
+    //let columns = Math.max(1, Services.prefs.getIntPref("browser.newtabpage.columns"));
+    for (let i = 0; i < 15/*columns * rows*/; i++) {
       fragment.appendChild(cell.cloneNode(true));
     }
 
@@ -143,7 +141,8 @@ let gGrid = {
    * @param rows Number of rows defaulting to the max
    */
   _computeHeight: function Grid_computeHeight(aRows) {
-    let gridRows = Math.max(1, Services.prefs.getIntPref("browser.newtabpage.rows"));
+    //let {gridRows} = gGridPrefs;
+    let gridRows = 3;
     aRows = aRows === undefined ? gridRows : Math.min(gridRows, aRows);
     return aRows * this._cellHeight + GRID_BOTTOM_EXTRA;
   },
@@ -160,15 +159,15 @@ let gGrid = {
     site.innerHTML =
       '<span class="newtab-sponsored">' + newTabString("sponsored.button") + '</span>' +
       '<a class="newtab-link">' +
-      '  <span class="newtab-thumbnail"/>' +
-      '  <span class="newtab-thumbnail enhanced-content"/>' +
-      '  <span class="newtab-title"/>' +
+      '  <span class="newtab-thumbnail"></span>' +
+      '  <span class="newtab-thumbnail enhanced-content"></span>' +
+      '  <span class="newtab-title"></span>' +
       '</a>' +
       '<input type="button" title="' + newTabString("pin") + '"' +
-      '       class="newtab-control newtab-control-pin"/>' +
+      '       class="newtab-control newtab-control-pin"></input>' +
       '<input type="button" title="' + newTabString("block") + '"' +
-      '       class="newtab-control newtab-control-block"/>' +
-      '<span class="newtab-suggested"/>';
+      '       class="newtab-control newtab-control-block"></input>' +
+      '<span class="newtab-suggested"></span>';
 
     this._siteFragment = document.createDocumentFragment();
     this._siteFragment.appendChild(site);
@@ -198,10 +197,9 @@ let gGrid = {
     let availSpace = document.documentElement.clientHeight - this._cellMargin -
                      document.querySelector("#newtab-search-container").offsetHeight;
     let visibleRows = Math.floor(availSpace / this._cellHeight);
-    let columns = Math.max(1, Services.prefs.getIntPref("browser.newtabpage.columns"));
     this._node.style.height = this._computeHeight() + "px";
     this._node.style.maxHeight = this._computeHeight(visibleRows) + "px";
-    this._node.style.maxWidth = columns * this._cellWidth +
+    this._node.style.maxWidth = 5 /*gGridPrefs.gridColumns*/ * this._cellWidth +
                                 GRID_WIDTH_EXTRA + "px";
   }
 };
