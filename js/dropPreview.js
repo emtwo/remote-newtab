@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 /**
  * This singleton provides the ability to re-arrange the current grid to
@@ -115,10 +113,10 @@ let gDropPreview = {
 
     // We need a pinned range only when dropping on a pinned site.
     if (aCell.containsPinnedSite()) {
-      sendAsyncMessage("NewTab:GetPinRange");
-      addMessageListener("NewTab:FetchLinks", (message) => {
-        removeEventListener("NewTab:FetchLinks", this);
-        let links = message.data.theLinks;
+      sendToBrowser("NewTab:GetPinRange");
+      registerListener("NewTab:FetchLinks", (message) => {
+        //removeEventListener("NewTab:FetchLinks", this);
+        let links = message.links;
 
         // Find all previous siblings of the drop target that are pinned as well.
         while (range.start && links[range.start - 1])

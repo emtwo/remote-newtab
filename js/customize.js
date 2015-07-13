@@ -1,8 +1,6 @@
-#ifdef 0
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
-#endif
 
 let gCustomize = {
   _nodeIDSuffixes: [
@@ -29,8 +27,8 @@ let gCustomize = {
     this._nodes.classic.addEventListener("click", this);
     this._nodes.enhanced.addEventListener("click", this);
     this._nodes.learn.addEventListener("click", this);
-    this._enhanced = Services.prefs.getBoolPref("browser.newtabpage.enhanced");
-    this._enabled = Services.prefs.getBoolPref("browser.newtabpage.enabled");
+    this._enhanced = true;//Services.prefs.getBoolPref("browser.newtabpage.enhanced");
+    this._enabled = true//Services.prefs.getBoolPref("browser.newtabpage.enabled");
 
     this.updateSelected();
   },
@@ -88,20 +86,20 @@ let gCustomize = {
     }
     switch (event.currentTarget.id) {
       case "newtab-customize-blank":
-        sendAsyncMessage("NewTab:Customize", {enabled: false, enhanced: false});
+        sendToBrowser("NewTab:Customize", {enabled: false, enhanced: false});
         this._enhanced = false;
         this._enabled = false;
         break;
       case "newtab-customize-classic":
         if (this._nodes.enhanced.getAttribute("selected")){
-          sendAsyncMessage("NewTab:Customize", {enabled: true, enhanced: true});
+          sendToBrowser("NewTab:Customize", {enabled: true, enhanced: true});
         } else {
-          sendAsyncMessage("NewTab:Customize", {enabled: true, enhanced: false});
+          sendToBrowser("NewTab:Customize", {enabled: true, enhanced: false});
         }
         this._enabled = true;
         break;
       case "newtab-customize-enhanced":
-        sendAsyncMessage("NewTab:Customize", {enabled: true, enhanced: !this._enhanced});
+        sendToBrowser("NewTab:Customize", {enabled: true, enhanced: !this._enhanced});
         this._enhanced = !this._enhanced;
         break;
       case "newtab-customize-learn":

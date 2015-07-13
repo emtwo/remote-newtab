@@ -14,7 +14,8 @@ let gPage = {
    * The page's unique window ID.
    */
   get windowID() {
-    return window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils).outerWindowID;
+    return 0;
+    //return window.QueryInterface(Ci.nsIInterfaceRequestor).getInterface(Ci.nsIDOMWindowUtils).outerWindowID;
   },
 
   /**
@@ -42,7 +43,7 @@ let gPage = {
     this._updateAttributes(enabled);
 
     // Initialize customize controls.
-    //gCustomize.init();
+    gCustomize.init();
 
     // Initialize intro panel.
     //gIntro.init();
@@ -88,8 +89,9 @@ let gPage = {
    * based on the given reason.
    */
   update(message, reason = "") {
-    let currentWindowID = this.windowID;
-    let outerWindowID = message.data.outerWindowID;
+    let currentWindowID;// = this.windowID;
+    let outerWindowID = message.outerWindowID;
+    currentWindowID = outerWindowID;
 
     // Do not refresh the entire grid for the page we're on, as refreshing will
     // cause tiles to flash briefly. It is ok to refresh pages not currently visible
@@ -146,7 +148,7 @@ let gPage = {
     gGrid.init();
 
     // Initialize the drop target shim.
-    //gDropTargetShim.init();
+    gDropTargetShim.init();
 
     if (navigator.platform.indexOf("Mac") !== -1) {
       // Workaround to prevent a delay on MacOSX due to a slow drop animation.
@@ -304,16 +306,16 @@ let gPage = {
 
   setPinState: function Page_setPinState(message) {
     for (let site of gGrid.sites) {
-      if (site && site._link.url == message.data.link.url) {
-        site._link.pinState = message.data.pinState
+      if (site && site._link.url == message.link.url) {
+        site._link.pinState = message.pinState;
       }
     }
   },
 
   setBlockState: function Page_setBlockState(message) {
     for (let site of gGrid.sites) {
-      if (site && site._link.url == message.data.link.url) {
-        site._link.blockState = message.data.blockState
+      if (site && site._link.url == message.link.url) {
+        site._link.blockState = message.blockState;
       }
     }
   },
