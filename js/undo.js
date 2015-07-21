@@ -91,7 +91,7 @@ let gUndoDialog = {
       return;
 
     let {index, wasPinned, blockedLink} = this._undoData;
-    sendAsyncMessage("NewTab:UnblockLink", {link: blockedLink, windowID: gPage.windowID, pinned: wasPinned, index: index});
+    sendToBrowser("NewTab:UnblockLink", {link: blockedLink, windowID: gPage.windowID, pinned: wasPinned, index: index});
     blockedLink.pinState = wasPinned;
     this._restore();
   },
@@ -100,7 +100,7 @@ let gUndoDialog = {
    * Undo all blocked sites.
    */
   _undoAll: function UndoDialog_undoAll() {
-    sendAsyncMessage("NewTab:UndoAll", {windowID: gPage.windowID});
+    sendToBrowser("NewTab:UndoAll", {windowID: gPage.windowID});
   },
 
   /**
