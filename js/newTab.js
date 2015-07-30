@@ -77,9 +77,12 @@ function inPrivateBrowsingMode() {
 }
 
 
-// Everything is loaded. Initialize the New Tab Page.
+// document is loaded. Initialize the New Tab Page.
 init();
-window.addEventListener("load", () => {
+
+// all init calls that trigger FX communication must wait for
+// NewTabCommandReady event from FX to ensure messaging works
+document.addEventListener("NewTabCommandReady", () => {
   gPage.init();
 });
 
